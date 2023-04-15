@@ -7,6 +7,8 @@ import sounddevice
 import soundfile
 import torch
 
+import wavio
+
 from InferenceInterfaces.InferenceArchitectures.InferenceAvocodo import HiFiGANGenerator
 from InferenceInterfaces.InferenceArchitectures.InferenceBigVGAN import BigVGAN
 from InferenceInterfaces.InferenceArchitectures.InferenceToucanTTS import ToucanTTS
@@ -302,7 +304,8 @@ class ToucanTTSInterface(torch.nn.Module):
         wav = torch.cat((wav, torch.zeros([12000])), 0).numpy()
         if increased_compatibility_mode:
             wav = [val for val in wav for _ in (0, 1)]  # doubling the sampling rate for better compatibility (24kHz is not as standard as 48kHz)
-            sounddevice.play(float2pcm(wav), samplerate=48000)
+            wavio.write("output.wav", float2pcm(wav), rate=48000, sampwidth=2)
+            #sounddevice.play(float2pcm(wav), samplerate=48000)
         else:
             sounddevice.play(wav, samplerate=24000)
         if blocking:
